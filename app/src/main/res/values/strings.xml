@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Review Phim</string>
+    <string name="action_home">Trang chủ</string>
+    <string name="action_favorite">Yêu thích</string>
+    <string name="action_list">Danh sách</string>
+    <string name="action_account">Tài khoản</string>
+    <string name="search">Search</string>
+    <string name="resident">Resident Evil - The Final Chapter</string>
+    <string name="science_fiction">Science Fiction</string>
+    <string name="spider">Spider-Man: No Way Home</string>
+    <string name="recommended">Recommended</string>
+    <string name="view_more">View more</string>
+    <string name="comedy_horrified">Comedy, Horrified</string>
+    <string name="august_12_2022">August 12, 2022</string>
+    <string name="duyen_ma">Duyên ma</string>
+    <string name="find_your_favorite_movie">Find Your Favorite Movies</string>
+    <string name="search_hint">Search</string>
+    <string name="xem_th_m">Xem thêm</string>
+    <string name="phim_chi_u">Phim đã chiếu</string>
+    <string name="danh_s_ch_phim">DANH SÁCH PHIM</string>
+    <string name="your_string_here">
+        <u>Forgot password</u>
+    </string>
+</resources>

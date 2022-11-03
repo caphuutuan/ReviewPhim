@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1069426187098",
+    "project_id": "flshop-59363",
+    "storage_bucket": "flshop-59363.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1069426187098:android:fb45d111ffa7340c8f7163",
+        "android_client_info": {
+          "package_name": "com.example.reviewphim"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1069426187098-koivfbj1d5m3h1j43vnsi5abogpm3b3p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.reviewphim",
+            "certificate_hash": "087dd806d07952716aaf10268bc5a7c25f722499"
+          }
+        },
+        {
+          "client_id": "1069426187098-uib045anifsbltd8inkamap7ov67f0al.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKBDhekupyTBWWKGd_uLk2jt4hkXKaEzs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1069426187098-uib045anifsbltd8inkamap7ov67f0al.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
