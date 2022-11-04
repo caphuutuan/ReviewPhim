@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -48,34 +49,35 @@ public class register extends MainActivity {
         btn_signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(CheckAllFields()){
-                    if(!validateEmail()){
-                        Toast.makeText(register.this, "sai form email", Toast.LENGTH_SHORT).show();
-                        //...
-                        et_password.setError("Required!");
-
-                    }else if(!CheckPWS()){
-                        Toast.makeText(register.this, "ko khớp pas", Toast.LENGTH_SHORT).show();
-                        //...
-                        et_confirmPassword.setError("Required!");
-                    } else{
-                        Toast.makeText(register.this, "Đăng kí thành công", Toast.LENGTH_SHORT).show();
-                        Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            public void run() {
-                                finish();
-                                Intent i = new Intent(register.this, MainActivity.class);
-                                startActivity(i);
-                            }
-                        }, _splashTime);
-                    }
-                } else {
-                    Toast.makeText(register.this, "Vui lòng nhập đủ thông tin", Toast.LENGTH_SHORT).show();
-                }
+                validateDate();
+//                if (CheckAllFields()) {
+//                    if (!validateEmail()) {
+//                        Toast.makeText(register.this, "sai form email", Toast.LENGTH_SHORT).show();
+//                        //...
+//                        et_password.setError("Required!");
+//
+//                    } else if (!CheckPWS()) {
+//                        Toast.makeText(register.this, "ko khớp pas", Toast.LENGTH_SHORT).show();
+//                        //...
+//                        et_confirmPassword.setError("Required!");
+//                    } else {
+//                        Toast.makeText(register.this, "Đăng kí thành công", Toast.LENGTH_SHORT).show();
+//                        Handler handler = new Handler();
+//                        handler.postDelayed(new Runnable() {
+//                            public void run() {
+//                                finish();
+//                                Intent i = new Intent(register.this, MainActivity.class);
+//                                startActivity(i);
+//                            }
+//                        }, _splashTime);
+//                    }
+//                } else {
+//                    Toast.makeText(register.this, "Vui lòng nhập đủ thông tin", Toast.LENGTH_SHORT).show();
+//                }
             }
         });
 
-        tv_loginNow=findViewById(R.id.tv_loginNow);
+        tv_loginNow = findViewById(R.id.tv_loginNow);
         tv_loginNow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -83,7 +85,7 @@ public class register extends MainActivity {
             }
         });
 
-        btn_signUp_fb= findViewById(R.id.btn_signUp_fb);
+        btn_signUp_fb = findViewById(R.id.btn_signUp_fb);
         btn_signUp_fb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -98,7 +100,7 @@ public class register extends MainActivity {
             }
         });
 
-        btn_signUp_gg= findViewById(R.id.btn_signUp_gg);
+        btn_signUp_gg = findViewById(R.id.btn_signUp_gg);
         btn_signUp_gg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -121,36 +123,23 @@ public class register extends MainActivity {
         String nhapPwr = et_password.getText().toString();
         String nhapCPwr = et_confirmPassword.getText().toString();
 
-        if(nhapHoten.equals(""))
-        {
+        if (nhapHoten.equals("")) {
             et_fullname.setError("Required!");
             et_fullname.setFocusable(true);
             return false;
-        }
-
-        else if(nhapUsername.equals(""))
-        {
+        } else if (nhapUsername.equals("")) {
             et_username.setError("Required!");
             et_username.setFocusable(true);
             return false;
-        }
-
-        else if(nhapEmail.equals(""))
-        {
+        } else if (nhapEmail.equals("")) {
             et_email.setError("Required!");
             et_email.setFocusable(true);
             return false;
-        }
-
-        else if(nhapPwr.equals(""))
-        {
+        } else if (nhapPwr.equals("")) {
             et_password.setError("Required!");
             et_password.setFocusable(true);
             return false;
-        }
-
-        else if(nhapCPwr.equals(""))
-        {
+        } else if (nhapCPwr.equals("")) {
             et_confirmPassword.setError("Required!");
             et_confirmPassword.setFocusable(true);
             return false;
@@ -161,12 +150,12 @@ public class register extends MainActivity {
     }
 
 
-    public void login(){
+    public void login() {
         Intent login = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(login);
     }
 
-    public void profile(){
+    public void profile() {
         Intent profile = new Intent(this, profile.class);
         startActivity(profile);
     }
@@ -187,50 +176,67 @@ public class register extends MainActivity {
 //            et_username.setError(null);
 //            et_username.setErrorEnabled(false);
 //            return true;
-        }return true;
-    }
-/*
-    private boolean validateEmail() {
-        String val = et_email.getText().toString().trim();
-        String checkEmail = "[a-zA-Z0-9._-]+@[a-z]+.+[a-z]+";
-        if (val.isEmpty()) {
-            et_email.setError("Field can not be empty");
-            return false;
-        } else if (!val.matches(checkEmail)) {
-            et_email.setError("Invalid Email!");
-            return false;
-        } else {
-//            et_email.setError(null);
-//            et_email.setErrorEnabled(false);
-//            return true;
-        }return true;
-    }
-
-    private boolean validatePassword() {
-        String val = et_password.getText().toString().trim();
-        String checkPassword = "^" +
-                "(?=.*[0-9])" +         //at least 1 digit
-                "(?=.*[a-z])" +         //at least 1 lower case letter
-                "(?=.*[A-Z])" +         //at least 1 upper case letter
-                "(?=.*[a-zA-Z])" +      //any letter
-                "(?=.*[@#$%^&+=])" +    //at least 1 special character
-                "(?=S+$)" +           //no white spaces
-                ".{4,}" +               //at least 4 characters
-                "$";
-        if (val.isEmpty()) {
-            et_password.setError("Field can not be empty");
-            return false;
-        } else if (!val.matches(checkPassword)) {
-            et_password.setError("Password should contain 4 characters!");
-            return false;
-        } else {
-//            et_password.setError(null);
-//            et_password.setErrorEnabled(false);
-//            return true;
         }
         return true;
     }
-    */
+
+        private String name="", email="", password="";
+
+        private void validateDate() {
+            String usename = et_username.getText().toString().trim();
+            String  email= et_email.getText().toString().trim();
+            String password = et_password.getText().toString().trim();
+            String cPassword = et_confirmPassword.getText().toString().trim();
+
+            if(TextUtils.isEmpty(name)) {
+                Toast.makeText(this, "Nhập lại tên của bạn...", Toast.LENGTH_SHORT).show();
+            }
+
+            else if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                Toast.makeText(this, "Email lỗi...", Toast.LENGTH_SHORT).show();
+            }
+
+            else if(TextUtils.isEmpty(password)) {
+                Toast.makeText(this, "Nhập lại mật khẩu...", Toast.LENGTH_SHORT).show();
+            }
+
+            else if(TextUtils.isEmpty(cPassword)) {
+                Toast.makeText(this, "Nhập lại tên của bạn...", Toast.LENGTH_SHORT).show();
+            }
+
+            else if(!password.equals(cPassword)) {
+                Toast.makeText(this, "Mật khẩu không trùng...", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                return;
+            }
+        }
+/*
+        private boolean validatePassword() {
+            String val = et_password.getText().toString().trim();
+            String checkPassword = "^" +
+                    "(?=.*[0-9])" +         //at least 1 digit
+                    "(?=.*[a-z])" +         //at least 1 lower case letter
+                    "(?=.*[A-Z])" +         //at least 1 upper case letter
+                    "(?=.*[a-zA-Z])" +      //any letter
+                    "(?=.*[@#$%^&+=])" +    //at least 1 special character
+                    "(?=S+$)" +           //no white spaces
+                    ".{4,}" +               //at least 4 characters
+                    "$";
+            if (val.isEmpty()) {
+                et_password.setError("Field can not be empty");
+                return false;
+            } else if (!val.matches(checkPassword)) {
+                et_password.setError("Password should contain 4 characters!");
+                return false;
+            } else {
+    //            et_password.setError(null);
+    //            et_password.setErrorEnabled(false);
+    //            return true;
+            }
+            return true;
+        }
+        */
     // defining our own password pattern
     private static final Pattern PASSWORD_PATTERN =
             Pattern.compile("^" +
@@ -256,6 +262,7 @@ public class register extends MainActivity {
             return true;
         }
     }
+
     private boolean validatePassword() {
         String passwordInput = et_password.getText().toString().trim();
         // if password field is empty
@@ -275,57 +282,12 @@ public class register extends MainActivity {
         }
     }
 
-//    public void confirmInput(View v) {
-//        if (!validateEmail() | !validatePassword()) {
-//            return;
-//        }
-//        Toast.makeText(this, "Đăng kí thành công", Toast.LENGTH_SHORT).show();
-//    }
-//
-    public boolean CheckPWS(){
-        String pws =  et_password.getText().toString();
+    public boolean CheckPWS() {
+        String pws = et_password.getText().toString();
         String Cpws = et_confirmPassword.getText().toString();
-        if(pws.equals(Cpws))
+        if (pws.equals(Cpws))
             return true;
         else
             return false;
     }
-
-
-
-//    private boolean validateGender() {
-//        if (radioGroup.getCheckedRadioButtonId() == -1) {
-//            Toast.makeText(this, "Please Select Gender", Toast.LENGTH_SHORT).show();
-//            return false;
-//        } else {
-//            return true;
-//        }
-//    }
-//
-//    private boolean validateAge() {
-//        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
-//        int userAge = datePicker.getYear();
-//        int isAgeValid = currentYear - userAge;
-//        if (isAgeValid < 14) {
-//            Toast.makeText(this, "You are not eligible to apply", Toast.LENGTH_SHORT).show();
-//            return false;
-//        } else
-//            return true;
-//    }
-//
-//    private boolean validatePhoneNumber() {
-//        String val = phoneNumber.getEditText().getText().toString().trim();
-//        String checkspaces = "Aw{1,20}z";
-//        if (val.isEmpty()) {
-//            phoneNumber.setError("Enter valid phone number");
-//            return false;
-//        } else if (!val.matches(checkspaces)) {
-//            phoneNumber.setError("No White spaces are allowed!");
-//            return false;
-//        } else {
-//            phoneNumber.setError(null);
-//            phoneNumber.setErrorEnabled(false);
-//            return true;
-//        }
-    }
-
+}
