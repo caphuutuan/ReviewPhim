@@ -1,6 +1,5 @@
 package com.example.reviewphim;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -14,10 +13,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import com.google.gson.Gson;
 
-import java.util.Calendar;
 import java.util.regex.Pattern;
 
 public class register extends MainActivity {
@@ -26,10 +23,6 @@ public class register extends MainActivity {
     private Button btn_signUp, btn_signUp_fb, btn_signUp_gg;
     private ImageButton imbBack;
     private TextView tv_loginNow;
-    private SharedPreferences.Editor editor;
-
-    private final Gson gson = new Gson();
-    boolean isAllFieldsChecked = false;
     protected int _splashTime = 1000;
 
     @Override
@@ -49,33 +42,23 @@ public class register extends MainActivity {
         btn_signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                validateDate();
-//                if (CheckAllFields()) {
-//                    if (!validateEmail()) {
-//                        Toast.makeText(register.this, "sai form email", Toast.LENGTH_SHORT).show();
-//                        //...
-//                        et_password.setError("Required!");
-//
-//                    } else if (!CheckPWS()) {
-//                        Toast.makeText(register.this, "ko khớp pas", Toast.LENGTH_SHORT).show();
-//                        //...
-//                        et_confirmPassword.setError("Required!");
-//                    } else {
-//                        Toast.makeText(register.this, "Đăng kí thành công", Toast.LENGTH_SHORT).show();
-//                        Handler handler = new Handler();
-//                        handler.postDelayed(new Runnable() {
-//                            public void run() {
-//                                finish();
-//                                Intent i = new Intent(register.this, MainActivity.class);
-//                                startActivity(i);
-//                            }
-//                        }, _splashTime);
-//                    }
-//                } else {
-//                    Toast.makeText(register.this, "Vui lòng nhập đủ thông tin", Toast.LENGTH_SHORT).show();
-//                }
+                if(validateDate()) {
+                    Toast.makeText(register.this, "Đăng kí thành công", Toast.LENGTH_SHORT).show();
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        public void run() {
+                            finish();
+                            Intent i = new Intent(register.this, MainActivity.class);
+                            startActivity(i);
+                        }
+                    }, _splashTime);
+                }
+                else {
+                    Toast.makeText(register.this, "Vui lòng nhập đủ thông tin", Toast.LENGTH_SHORT).show();
+                }
             }
         });
+
 
         tv_loginNow = findViewById(R.id.tv_loginNow);
         tv_loginNow.setOnClickListener(new View.OnClickListener() {
@@ -116,40 +99,6 @@ public class register extends MainActivity {
         });
     }
 
-    private boolean CheckAllFields() {
-        String nhapHoten = et_fullname.getText().toString();
-        String nhapUsername = et_username.getText().toString();
-        String nhapEmail = et_email.getText().toString();
-        String nhapPwr = et_password.getText().toString();
-        String nhapCPwr = et_confirmPassword.getText().toString();
-
-        if (nhapHoten.equals("")) {
-            et_fullname.setError("Required!");
-            et_fullname.setFocusable(true);
-            return false;
-        } else if (nhapUsername.equals("")) {
-            et_username.setError("Required!");
-            et_username.setFocusable(true);
-            return false;
-        } else if (nhapEmail.equals("")) {
-            et_email.setError("Required!");
-            et_email.setFocusable(true);
-            return false;
-        } else if (nhapPwr.equals("")) {
-            et_password.setError("Required!");
-            et_password.setFocusable(true);
-            return false;
-        } else if (nhapCPwr.equals("")) {
-            et_confirmPassword.setError("Required!");
-            et_confirmPassword.setFocusable(true);
-            return false;
-        }
-
-        // after all validation return true.
-        return true;
-    }
-
-
     public void login() {
         Intent login = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(login);
@@ -160,57 +109,50 @@ public class register extends MainActivity {
         startActivity(profile);
     }
 
-    private boolean validateUsername() {
-        String val = et_username.getText().toString().trim();
-        String checkspaces = "Aw{1,20}z";
-        if (val.isEmpty()) {
-            et_username.setError("Field can not be empty");
+//    private String fullname="", username="", email="", password="", Cpassword="";
+    private boolean validateDate() {
+        String fullname = et_fullname.getText().toString().trim();
+        String usename = et_username.getText().toString().trim();
+        String email = et_email.getText().toString().trim();
+        String password = et_password.getText().toString().trim();
+        String cPassword = et_confirmPassword.getText().toString().trim();
+
+        if (TextUtils.isEmpty(fullname)) {
+            et_fullname.setError("Nhập tên của bạn");
+            et_fullname.setFocusable(true);
             return false;
-        } else if (val.length() > 25) {
-            et_username.setError("Username is too large!");
-            return false;
-        } else if (!val.matches(checkspaces)) {
-            et_username.setError("No White spaces are allowed!");
-            return false;
-        } else {
-//            et_username.setError(null);
-//            et_username.setErrorEnabled(false);
-//            return true;
         }
-        return true;
+        else if (TextUtils.isEmpty(usename)) {
+            et_username.setError("Không được để trống");
+            et_username.setFocusable(true);
+            return false;
+        }
+        else  if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            et_email.setError("Email không đúng");
+            et_email.setFocusable(true);
+            return false;
+        }
+        else  if (TextUtils.isEmpty(password)) {
+            et_password.setError("Không được để trống");
+            et_password.setFocusable(true);
+            return false;
+        }
+        else  if (TextUtils.isEmpty(cPassword)) {
+            et_confirmPassword.setError("Không được để trống");
+            et_confirmPassword.setFocusable(true);
+            return false;
+        }
+        else  if (!password.equals(cPassword)) {
+            et_confirmPassword.setError("Mật khẩu không trùng nhau");
+            et_confirmPassword.setFocusable(true);
+            return false;
+        }
+         else {
+            return true;
+         }
+
     }
 
-        private String name="", email="", password="";
-
-        private void validateDate() {
-            String usename = et_username.getText().toString().trim();
-            String  email= et_email.getText().toString().trim();
-            String password = et_password.getText().toString().trim();
-            String cPassword = et_confirmPassword.getText().toString().trim();
-
-            if(TextUtils.isEmpty(name)) {
-                Toast.makeText(this, "Nhập lại tên của bạn...", Toast.LENGTH_SHORT).show();
-            }
-
-            else if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                Toast.makeText(this, "Email lỗi...", Toast.LENGTH_SHORT).show();
-            }
-
-            else if(TextUtils.isEmpty(password)) {
-                Toast.makeText(this, "Nhập lại mật khẩu...", Toast.LENGTH_SHORT).show();
-            }
-
-            else if(TextUtils.isEmpty(cPassword)) {
-                Toast.makeText(this, "Nhập lại tên của bạn...", Toast.LENGTH_SHORT).show();
-            }
-
-            else if(!password.equals(cPassword)) {
-                Toast.makeText(this, "Mật khẩu không trùng...", Toast.LENGTH_SHORT).show();
-            }
-            else{
-                return;
-            }
-        }
 /*
         private boolean validatePassword() {
             String val = et_password.getText().toString().trim();
@@ -245,49 +187,56 @@ public class register extends MainActivity {
                     ".{4,}" +                // at least 4 characters
                     "$");
 
-    private boolean validateEmail() {
-        // Extract input from EditText
-        String emailInput = et_email.getText().toString().trim();
-        // if the email input field is empty
-        if (emailInput.equals("")) {
-            et_email.setError("Field can not be empty");
+    private boolean validateUsername() {
+        String val = et_username.getText().toString().trim();
+        String checkspaces = "Aw{1,20}z";
+        if (val.isEmpty()) {
+            et_username.setError("Field can not be empty");
             return false;
-        }
-        // Matching the input email to a predefined email pattern
-        else if (!Patterns.EMAIL_ADDRESS.matcher(emailInput).matches()) {
-            et_email.setError("Please enter a valid email address");
+        } else if (val.length() > 25) {
+            et_username.setError("Username is too large!");
             return false;
-        } else {
-            et_email.setError(null);
-            return true;
-        }
-    }
-
-    private boolean validatePassword() {
-        String passwordInput = et_password.getText().toString().trim();
-        // if password field is empty
-        // it will display error message "Field can not be empty"
-        if (passwordInput.equals("")) {
-            et_password.setError("Field can not be empty");
-            return false;
-        }
-        // if password does not matches to the pattern
-        // it will display an error message "Password is too weak"
-        else if (!PASSWORD_PATTERN.matcher(passwordInput).matches()) {
-            et_password.setError("Password is too weak");
+        } else if (!val.matches(checkspaces)) {
+            et_username.setError("No White spaces are allowed!");
             return false;
         } else {
-            et_password.setError(null);
-            return true;
+//            et_username.setError(null);
+//            et_username.setErrorEnabled(false);
+//            return true;
         }
+        return true;
     }
 
-    public boolean CheckPWS() {
-        String pws = et_password.getText().toString();
-        String Cpws = et_confirmPassword.getText().toString();
-        if (pws.equals(Cpws))
-            return true;
-        else
-            return false;
+    private boolean CheckAllFields() {
+    String nhapHoten = et_fullname.getText().toString();
+    String nhapUsername = et_username.getText().toString();
+    String nhapEmail = et_email.getText().toString();
+    String nhapPwr = et_password.getText().toString();
+    String nhapCPwr = et_confirmPassword.getText().toString();
+
+    if (nhapHoten.equals("")) {
+        et_fullname.setError("Required!");
+        et_fullname.setFocusable(true);
+        return false;
+    } else if (nhapUsername.equals("")) {
+        et_username.setError("Required!");
+        et_username.setFocusable(true);
+        return false;
+    } else if (nhapEmail.equals("")) {
+        et_email.setError("Required!");
+        et_email.setFocusable(true);
+        return false;
+    } else if (nhapPwr.equals("")) {
+        et_password.setError("Required!");
+        et_password.setFocusable(true);
+        return false;
+    } else if (nhapCPwr.equals("")) {
+        et_confirmPassword.setError("Required!");
+        et_confirmPassword.setFocusable(true);
+        return false;
     }
+
+    // after all validation return true.
+    return true;
+}
 }

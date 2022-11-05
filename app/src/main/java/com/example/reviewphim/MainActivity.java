@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private Context context;
     private ProgressBar progressBar;
 
+    protected int _splashTime = 1500;
     boolean isAllFieldsChecked = false;
 
     @SuppressLint("MissingInflatedId")
@@ -66,8 +68,15 @@ public class MainActivity extends AppCompatActivity {
                     et_password.setFocusable(true);
                 }
                 else {
-                    Intent i = new Intent(MainActivity.this, HomeActivity.class);
-                    startActivity(i);
+                    Toast.makeText(getApplicationContext(), "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        public void run() {
+                            finish();
+                            Intent i = new Intent(MainActivity.this, HomeActivity.class);
+                            startActivity(i);
+                        }
+                    }, _splashTime);
                 }
             }
         });

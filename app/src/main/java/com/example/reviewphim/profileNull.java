@@ -38,7 +38,7 @@ public class profileNull extends profile {
 //                        startActivity(i);
 //                    }
 //                }, _splashTime);
-                Intent i = new Intent(profileNull.this, profile.class);
+                Intent i = new Intent(profileNull.this, MainActivity.class);
                 startActivity(i);
                 finish();
             }
