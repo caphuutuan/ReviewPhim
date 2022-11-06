@@ -1,5 +1,6 @@
 package com.example.reviewphim;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.animation.Animator;
@@ -30,6 +31,13 @@ import android.widget.TextView;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+
 
 public class profile extends AppCompatActivity {
 
@@ -41,6 +49,8 @@ public class profile extends AppCompatActivity {
 
     private ScaleGestureDetector scaleGestureDetector;
     private float mScaleFactor = 1.0f;
+    GoogleSignInOptions gso;
+    GoogleSignInClient gsc;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -50,20 +60,23 @@ public class profile extends AppCompatActivity {
         getSupportActionBar().hide();
         overridePendingTransition(R.anim.zoom_in_fade_in, android.R.anim.fade_out);
 
-        scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
+        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+        gsc = GoogleSignIn.getClient(this, gso);
 
+        //chua fix
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
+        if(acct!=null){
+            String personName = acct.getDisplayName();
+            String personEmail = acct.getEmail();
+            tv_name.setText(personName);
+            tv_email.setText(personEmail);
+        }
+        //-----------------
         btn_logOut = findViewById(R.id.btn_back);
         btn_logOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    public void run() {
-                        finish();
-                        Intent i = new Intent(profile.this, profileNull.class);
-                        startActivity(i);
-                    }
-                }, _splashTime);
+                signOut();
             }
         });
 
@@ -135,13 +148,6 @@ public class profile extends AppCompatActivity {
             }
         });
 
-        tv_name = findViewById(R.id.tv_name);
-        Intent i = getIntent();
-
-        String s1 = i.getStringExtra("value");
-        tv_name.setText(s1);
-
-
         logoImageView = findViewById(R.id.logoImageView);
         logoImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -149,30 +155,24 @@ public class profile extends AppCompatActivity {
 //               zoom_out= AnimationUtils.loadAnimation(getApplicationContext(), R.anim.zoom_out);
 //               logoImageView.setVisibility(View.VISIBLE);
 //               logoImageView.startAnimation(zoom_out);
-
             }
         });
 //    }
-//
-//    @Override
-//    public boolean onTouchEvent(MotionEvent motionEvent) {
-//        scaleGestureDetector.onTouchEvent(motionEvent);
-//        return true;
-    }
-    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-        @Override
-        public boolean onScale(ScaleGestureDetector scaleGestureDetector) {
-//            mScaleFactor *= scaleGestureDetector.getScaleFactor();
-//            mScaleFactor = Math.max(0.1f, Math.min(mScaleFactor, 10.0f));
-//            logoImageView.setScaleX(mScaleFactor);
-//            logoImageView.setScaleY(mScaleFactor);
-            return true;
-        }
     }
 
     public void logOut() {
         Intent logOut = new Intent(profile.this, MainActivity.class);
         startActivity(logOut);
+    }
+
+    void signOut(){
+        gsc.signOut().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(Task<Void> task) {
+                finish();
+                startActivity(new Intent(profile.this, HomeActivity.class));
+            }
+        });
     }
 
     public void account() {

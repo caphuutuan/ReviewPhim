@@ -76,13 +76,11 @@ public class HomeActivity extends AppCompatActivity implements MovieOnClickListe
         round_profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 Intent i = new Intent(HomeActivity.this, profileNull.class);
                 startActivity(i);
             }
         });
-
-
-
     }
 
     private void setPopularRecycler(List<PopularMovie> popularMovieList) {

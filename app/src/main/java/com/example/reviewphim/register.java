@@ -2,6 +2,9 @@ package com.example.reviewphim;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -13,8 +16,20 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import java.util.Random;
+import java.util.UUID;
 import com.google.gson.Gson;
-
 import java.util.regex.Pattern;
 
 public class register extends MainActivity {
@@ -24,6 +39,10 @@ public class register extends MainActivity {
     private ImageButton imbBack;
     private TextView tv_loginNow;
     protected int _splashTime = 1000;
+    DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReferenceFromUrl("https://flshop-59363-default-rtdb.firebaseio.com/");
+
+    GoogleSignInOptions gso;
+    GoogleSignInClient gsc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,33 +51,78 @@ public class register extends MainActivity {
         getSupportActionBar().hide();
         overridePendingTransition(R.anim.zoom_in_fade_in, R.anim.fade_out);
 
-        et_fullname = findViewById(R.id.et_fullname);
-        et_username = findViewById(R.id.et_username);
-        et_email = findViewById(R.id.et_email);
-        et_password = findViewById(R.id.et_password);
-        et_confirmPassword = findViewById(R.id.et_confirmPassword);
-        btn_signUp = findViewById(R.id.btn_signUp);
+        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+        gsc = GoogleSignIn.getClient(this, gso);
+
+        initUi();
+//        initListener();
 
         btn_signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(validateDate()) {
-                    Toast.makeText(register.this, "Đăng kí thành công", Toast.LENGTH_SHORT).show();
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        public void run() {
-                            finish();
-                            Intent i = new Intent(register.this, MainActivity.class);
-                            startActivity(i);
-                        }
-                    }, _splashTime);
+                Random random=new Random();
+                String fullname = et_fullname.getText().toString().trim();
+                String usename = et_username.getText().toString().trim();
+                String email = et_email.getText().toString().trim();
+                String password = et_password.getText().toString().trim();
+                String cPassword = et_confirmPassword.getText().toString().trim();
+
+                String Role = "user";
+
+                if (TextUtils.isEmpty(fullname)) {
+                    et_fullname.setError("Nhập tên của bạn");
+                }
+                else if (TextUtils.isEmpty(usename)) {
+                    et_username.setError("Không được để trống");
+                }
+                else  if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    et_email.setError("Email không đúng");
+                }
+                else  if (TextUtils.isEmpty(password)) {
+                    et_password.setError("Không được để trống");
+                }
+                else  if (TextUtils.isEmpty(cPassword)) {
+                    et_confirmPassword.setError("Không được để trống");
+                }
+                else  if (!password.equals(cPassword)) {
+                    et_confirmPassword.setError("Mật khẩu không trùng nhau");
                 }
                 else {
-                    Toast.makeText(register.this, "Vui lòng nhập đủ thông tin", Toast.LENGTH_SHORT).show();
+                    databaseReference.child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if(snapshot.hasChild(usename)){
+                                Toast.makeText(register.this,"Username đã tồn tại !", Toast.LENGTH_LONG).show();
+                            }
+                            else {
+                                databaseReference.child("Users").child(usename).child("fullname").setValue(fullname);
+                                databaseReference.child("Users").child(usename).child("email").setValue(email);
+//                                databaseReference.child("Users").child(userId).child("phone").setValue(phoneTxt);
+                                databaseReference.child("Users").child(usename).child("password").setValue(password);
+                                databaseReference.child("Users").child(usename).child("role").setValue(Role);
+                                Toast.makeText(register.this,"Tạo tài khoản thành công", Toast.LENGTH_LONG).show();
+//                                finish();
+                                Handler handler = new Handler();
+                                handler.postDelayed(new Runnable() {
+                                    public void run() {
+                                        finish();
+                                        Intent i = new Intent(register.this, MainActivity.class);
+                                        startActivity(i);
+                                    }
+                                }, _splashTime);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+
                 }
+
             }
         });
-
 
         tv_loginNow = findViewById(R.id.tv_loginNow);
         tv_loginNow.setOnClickListener(new View.OnClickListener() {
@@ -87,16 +151,47 @@ public class register extends MainActivity {
         btn_signUp_gg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    public void run() {
-                        finish();
-                        Intent i = new Intent(register.this, HomeActivity.class);
-                        startActivity(i);
-                    }
-                }, _splashTime);
+                signIn();
+//                Handler handler = new Handler();
+//                handler.postDelayed(new Runnable() {
+//                    public void run() {
+//                        finish();
+//                        Intent i = new Intent(register.this, HomeActivity.class);
+//                        startActivity(i);
+//                    }
+//                }, _splashTime);
+
             }
         });
+    }
+
+    private void initUi(){
+        et_fullname = findViewById(R.id.et_fullname);
+        et_username = findViewById(R.id.et_username);
+        et_email = findViewById(R.id.et_email);
+        et_password = findViewById(R.id.et_password);
+        et_confirmPassword = findViewById(R.id.et_confirmPassword);
+        btn_signUp = findViewById(R.id.btn_signUp);
+    }
+
+//    private void initListener() {
+//        backBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                onBackPressed();
+//            }
+//        });
+//    }
+
+    private static String getRandomString(int i){
+        final String characters="0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
+        StringBuffer result=new StringBuffer();
+        while (i>0){
+            Random random=new Random();
+            result.append(characters.charAt(random.nextInt(characters.length())));
+            i--;
+        }
+        return result.toString();
     }
 
     public void login() {
@@ -109,7 +204,32 @@ public class register extends MainActivity {
         startActivity(profile);
     }
 
-//    private String fullname="", username="", email="", password="", Cpassword="";
+    public void signIn() {
+        Intent signInIntent = new Intent(this, profile.class);
+        startActivityForResult(signInIntent, 1000);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==1000){
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            navigateToSencondActivity();
+            try {
+                task.getResult(ApiException.class);
+            } catch (ApiException e) {
+                Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    public void navigateToSencondActivity(){
+        finish();
+        Intent i = new Intent(register.this, account.class);
+        startActivity(i);
+    }
+
+    //    private String fullname="", username="", email="", password="", cPassword="";
     private boolean validateDate() {
         String fullname = et_fullname.getText().toString().trim();
         String usename = et_username.getText().toString().trim();
@@ -187,26 +307,6 @@ public class register extends MainActivity {
                     ".{4,}" +                // at least 4 characters
                     "$");
 
-    private boolean validateUsername() {
-        String val = et_username.getText().toString().trim();
-        String checkspaces = "Aw{1,20}z";
-        if (val.isEmpty()) {
-            et_username.setError("Field can not be empty");
-            return false;
-        } else if (val.length() > 25) {
-            et_username.setError("Username is too large!");
-            return false;
-        } else if (!val.matches(checkspaces)) {
-            et_username.setError("No White spaces are allowed!");
-            return false;
-        } else {
-//            et_username.setError(null);
-//            et_username.setErrorEnabled(false);
-//            return true;
-        }
-        return true;
-    }
-
     private boolean CheckAllFields() {
     String nhapHoten = et_fullname.getText().toString();
     String nhapUsername = et_username.getText().toString();
@@ -239,4 +339,24 @@ public class register extends MainActivity {
     // after all validation return true.
     return true;
 }
+//    private boolean validateUsername() {
+//        String val = et_username.getText().toString().trim();
+//        String checkspaces = "Aw{1,20}z";
+//        if (val.isEmpty()) {
+//            et_username.setError("Field can not be empty");
+//            return false;
+//        } else if (val.length() > 25) {
+//            et_username.setError("Username is too large!");
+//            return false;
+//        } else if (!val.matches(checkspaces)) {
+//            et_username.setError("No White spaces are allowed!");
+//            return false;
+//        } else {
+//            et_username.setError(null);
+//            et_username.setErrorEnabled(false);
+//            return true;
+//        }
+//        return true;
+//    }
 }
+
