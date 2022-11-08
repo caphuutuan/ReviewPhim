@@ -92,7 +92,7 @@ public class register extends MainActivity {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             if(snapshot.hasChild(usename)){
-                                Toast.makeText(register.this,"Username đã tồn tại !", Toast.LENGTH_LONG).show();
+                                Toast.makeText(register.this,"username đã tồn tại !", Toast.LENGTH_LONG).show();
                             }
                             else {
                                 databaseReference.child("Users").child(usename).child("fullname").setValue(fullname);

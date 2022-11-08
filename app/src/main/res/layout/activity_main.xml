@@ -86,21 +86,29 @@
                 android:minHeight="48dp"
                 android:padding="10dp" />
 
-            <TextView
-                android:id="@+id/tv_forgotpassword"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="60dp"
                 android:layout_marginLeft="60dp"
-                android:layout_marginTop="20dp"
                 android:layout_marginEnd="60dp"
                 android:layout_marginRight="60dp"
-                android:layout_marginBottom="20dp"
+                android:orientation="horizontal">
 
-                android:gravity="right"
+                <CheckBox
+                    android:id="@+id/checkBox"
+                    android:layout_width="105dp"
+                    android:layout_height="wrap_content"
+                    android:text="Remember" />
 
-                android:text="@string/your_string_here"
-                android:textStyle="italic" />
+                <TextView
+                    android:id="@+id/tv_forgotpassword"
+                    android:layout_width="172dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:text="@string/your_string_here"
+                    android:textStyle="italic" />
+            </LinearLayout>
 
             <Button
                 android:id="@+id/btn_login"

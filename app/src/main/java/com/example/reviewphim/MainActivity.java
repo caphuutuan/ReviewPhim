@@ -6,12 +6,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -24,6 +26,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.security.Key;
 import java.util.Random;
 import java.util.UUID;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -35,6 +39,12 @@ public class MainActivity extends AppCompatActivity {
     private TextView tv_result, tv_forgotpassword, tv_signUp, tv_test;
     private Context context;
     private ProgressBar progressBar;
+    private CheckBox checkBox;
+    SharedPreferences sharedPreferences;
+
+    private static final String SHARED_PREF_NAME="myref";
+    private static final String KEY_NAME="name";
+    private static final String KEY_EMAIL="email";
 
     GoogleSignInOptions gso;
     GoogleSignInClient gsc;
@@ -57,35 +67,19 @@ public class MainActivity extends AppCompatActivity {
         initUi();
         initListener();
         context = this;
+        sharedPreferences =getSharedPreferences(SHARED_PREF_NAME, MODE_PRIVATE);
+        sharedPreferences=getSharedPreferences("dataLogin", MODE_PRIVATE);
 
-        btn_login_fb = findViewById(R.id.btn_login_fb);
-        btn_login_fb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                profile();
-                String Slogin = new String("Facebook");
+        et_username.setText(sharedPreferences.getString("taikhoan",""));
+        et_password.setText(sharedPreferences.getString("matkhau",""));
+        checkBox.setChecked(sharedPreferences.getBoolean("checked",false));
 
-                Intent i = new Intent(getApplicationContext(), profile.class);
-                i.putExtra("value1", Slogin);
-                startActivity(i);
-            }
-        });
 
-        btn_login_gg = findViewById(R.id.btn_signUp_gg);
-        btn_login_gg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                profile();
-            }
-        });
-
-        tv_forgotpassword = (TextView) findViewById(R.id.tv_forgotpassword);
-        tv_forgotpassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                forgotpassword();
-            }
-        });
+        String name = sharedPreferences.getString(KEY_NAME,null);
+//        if(name !=null){
+//            Intent i = new Intent(getApplicationContext(), HomeActivity.class);
+//            startActivity(i);
+//        }
     }
 
     private void initUi() {
@@ -95,20 +89,22 @@ public class MainActivity extends AppCompatActivity {
         tv_test = findViewById(R.id.tv_test);
         et_username=findViewById(R.id.et_username);
         et_password=findViewById(R.id.et_password);
+        tv_signUp = (TextView) findViewById(R.id.tv_loginNow);
+        tv_forgotpassword = (TextView) findViewById(R.id.tv_forgotpassword);
+        btn_login_gg = findViewById(R.id.btn_signUp_gg);
+        btn_login_fb = findViewById(R.id.btn_login_fb);
+        checkBox = findViewById(R.id.checkBox);
     }
 
     private void initListener() {
-        tv_signUp = (TextView) findViewById(R.id.tv_loginNow);
-        tv_signUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                register();
-            }
-        });
-
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString(KEY_NAME, et_username.getText().toString().trim());
+                editor.apply();
+
                 String username = et_username.getText().toString().trim();
                 String password = et_password.getText().toString().trim();
                 if(TextUtils.isEmpty(username)){
@@ -125,8 +121,23 @@ public class MainActivity extends AppCompatActivity {
                                 String getPassword = snapshot.child(username).child("password").getValue(String.class);
                                 if(getPassword.equals(password)){
                                     Toast.makeText(MainActivity.this,"Đăng nhập thành công !",Toast.LENGTH_SHORT).show();
-                                    startActivity(new Intent(MainActivity.this,HomeActivity.class));
+                                    startActivity(new Intent(MainActivity.this,profile.class));
                                     finish();
+                                    //luu username nhap vao neu co checkbox
+                                    if(checkBox.isChecked()){
+                                        SharedPreferences.Editor editor1 =sharedPreferences.edit();
+                                        editor1.putString("taikhoan", username);
+                                        editor1.putString("matkhau", password);
+                                        editor1.putBoolean("checked", true);
+                                        editor1.commit();
+                                    }
+                                    else{
+                                        SharedPreferences.Editor editor1 =sharedPreferences.edit();
+                                        editor1.remove("taikhoan");
+                                        editor1.remove("matkhau");
+                                        editor1.remove("checked");
+                                        editor1.commit();
+                                    }
                                 }else {
                                     Toast.makeText(MainActivity.this,"Mật khẩu không đúng!",Toast.LENGTH_SHORT).show();
                                 }
@@ -135,13 +146,43 @@ public class MainActivity extends AppCompatActivity {
                                 Toast.makeText(MainActivity.this,"Username hoặc Password không đúng !",Toast.LENGTH_SHORT).show();
                             }
                         }
-
                         @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-
-                        }
+                        public void onCancelled(@NonNull DatabaseError error) {}
                     });
                 }
+            }
+        });
+
+        tv_signUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                register();
+            }
+        });
+
+        btn_login_fb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                profile();
+                String Slogin = new String("Facebook");
+
+                Intent i = new Intent(getApplicationContext(), profile.class);
+                i.putExtra("value1", Slogin);
+                startActivity(i);
+            }
+        });
+
+        btn_login_gg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                profile();
+            }
+        });
+
+        tv_forgotpassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                forgotpassword();
             }
         });
     }
