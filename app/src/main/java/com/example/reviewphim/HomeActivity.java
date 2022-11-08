@@ -41,7 +41,6 @@ public class HomeActivity extends AppCompatActivity implements MovieOnClickListe
         setContentView(R.layout.activity_home);
         getSupportActionBar().hide();
 
-
         //Popular List Movie
         List<PopularMovie> popularMovieList = new ArrayList<>();
         popularMovieList.add(new PopularMovie("Duyên ma", "Comedy, Horrified", "August 12, 2022", R.drawable.one, 4.5f));
@@ -51,8 +50,6 @@ public class HomeActivity extends AppCompatActivity implements MovieOnClickListe
         popularMovieList.add(new PopularMovie("Shut In", "Science Fiction", "September 2, 2016", R.drawable.two, 4.8f));
 
         setPopularRecycler(popularMovieList);
-
-
         //Setup Recommend Movie
         recommendRecycler = findViewById(R.id.recommend_recycler);
         recommendMovieAdapter = new RecommendMovieAdapter(this);
