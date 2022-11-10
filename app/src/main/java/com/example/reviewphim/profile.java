@@ -1,36 +1,20 @@
 package com.example.reviewphim;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Point;
-import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.transition.ChangeBounds;
-import android.transition.ChangeImageTransform;
-import android.transition.TransitionManager;
-import android.transition.TransitionSet;
-import android.view.MotionEvent;
+import android.util.Log;
 import android.view.ScaleGestureDetector;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -53,7 +37,6 @@ public class profile extends AppCompatActivity {
 
     private static final String SHARED_PREF_NAME="myref";
     private static final String KEY_NAME="name";
-    private static final String KEY_EMAIL="email";
 
     private ScaleGestureDetector scaleGestureDetector;
     private float mScaleFactor = 1.0f;
@@ -74,12 +57,11 @@ public class profile extends AppCompatActivity {
         initUi();
         initListener();
 
-        sharedPreferences=getSharedPreferences(SHARED_PREF_NAME, MODE_PRIVATE);
-        String name = sharedPreferences.getString(KEY_NAME, null);
+//        Toast.makeText(getApplicationContext(), "name: "+ tv_name,Toast.LENGTH_LONG).show();
+//        if(name !=null){
+//            tv_name.setText(name);
+//        }
 
-        if(name !=null){
-            tv_name.setText(name);
-        }
         //chua fix
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
         if(acct!=null){
@@ -101,19 +83,13 @@ public class profile extends AppCompatActivity {
     }
 
     private void initListener(){
-        btn_logOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                signOut();
-            }
-        });
 
         btn_logOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences.Editor editor=sharedPreferences.edit();
-                editor.clear();
-                editor.commit();
+//                SharedPreferences.Editor editor=sharedPreferences.edit();
+//                editor.clear();
+//                editor.commit();
                 Toast.makeText(getApplicationContext(),"Đăng xuất thành công", Toast.LENGTH_SHORT).show();
                 signOut();
                 finish();
@@ -188,9 +164,10 @@ public class profile extends AppCompatActivity {
         });
     }
 
-    public void logOut() {
+    public boolean logOut() {
         Intent logOut = new Intent(profile.this, HomeActivity.class);
         startActivity(logOut);
+        return false;
     }
 
     void signOut(){

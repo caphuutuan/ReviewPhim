@@ -58,7 +58,7 @@ public class HomeActivity extends AppCompatActivity implements MovieOnClickListe
         recommendMovieAdapter.setData(getListRecommend());
         recommendRecycler.setAdapter(recommendMovieAdapter);
 
-        //Intent ListviewPage
+        //Intent ListviewPagexx
         tv_view_more = findViewById(R.id.tv_view_more);
         tv_view_more.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,7 +73,6 @@ public class HomeActivity extends AppCompatActivity implements MovieOnClickListe
         round_profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 Intent i = new Intent(HomeActivity.this, profileNull.class);
                 startActivity(i);
             }

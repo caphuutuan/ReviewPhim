@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -40,11 +41,11 @@ public class MainActivity extends AppCompatActivity {
     private Context context;
     private ProgressBar progressBar;
     private CheckBox checkBox;
+
     SharedPreferences sharedPreferences;
 
     private static final String SHARED_PREF_NAME="myref";
     private static final String KEY_NAME="name";
-    private static final String KEY_EMAIL="email";
 
     GoogleSignInOptions gso;
     GoogleSignInClient gsc;
@@ -62,24 +63,29 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().hide();
         overridePendingTransition(android.R.anim.slide_in_left, R.anim.zoom_out_fade_out);
 
-        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
-        gsc = GoogleSignIn.getClient(this, gso);
         initUi();
         initListener();
         context = this;
-        sharedPreferences =getSharedPreferences(SHARED_PREF_NAME, MODE_PRIVATE);
+
+        // lay thong tin dang nhap dua vao profile
+//        sharedPreferences =getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+//
+//        String name = sharedPreferences.getString(KEY_NAME,null);
+//        if(name !=null){
+//            Intent i = new Intent(getApplicationContext(), HomeActivity.class);
+//            startActivity(i);
+//        }
+
+//        SharedPreferences sp = getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+//        sp.edit().putString(KEY_NAME, et_username.getText().toString().trim()).commit();
+
+        //luu dang nhap
         sharedPreferences=getSharedPreferences("dataLogin", MODE_PRIVATE);
 
         et_username.setText(sharedPreferences.getString("taikhoan",""));
         et_password.setText(sharedPreferences.getString("matkhau",""));
         checkBox.setChecked(sharedPreferences.getBoolean("checked",false));
 
-
-        String name = sharedPreferences.getString(KEY_NAME,null);
-//        if(name !=null){
-//            Intent i = new Intent(getApplicationContext(), HomeActivity.class);
-//            startActivity(i);
-//        }
     }
 
     private void initUi() {
@@ -101,10 +107,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(KEY_NAME, et_username.getText().toString().trim());
-                editor.apply();
-
                 String username = et_username.getText().toString().trim();
                 String password = et_password.getText().toString().trim();
                 if(TextUtils.isEmpty(username)){
@@ -120,16 +122,26 @@ public class MainActivity extends AppCompatActivity {
                             if(snapshot.hasChild(username)){
                                 String getPassword = snapshot.child(username).child("password").getValue(String.class);
                                 if(getPassword.equals(password)){
+
+//                                    //editor : lay thong tin dang nhap
+//                                    SharedPreferences.Editor editor = sharedPreferences.edit();
+//                                    editor.putString(KEY_NAME, et_username.getText().toString().trim());
+//                                    editor.apply();
+
                                     Toast.makeText(MainActivity.this,"Đăng nhập thành công !",Toast.LENGTH_SHORT).show();
+
                                     startActivity(new Intent(MainActivity.this,profile.class));
                                     finish();
                                     //luu username nhap vao neu co checkbox
                                     if(checkBox.isChecked()){
+                                        //editor : lay thong tin dang nhap
                                         SharedPreferences.Editor editor1 =sharedPreferences.edit();
                                         editor1.putString("taikhoan", username);
                                         editor1.putString("matkhau", password);
                                         editor1.putBoolean("checked", true);
                                         editor1.commit();
+
+                                        SharedPreferences sp = getSharedPreferences(SHARED_PREF_NAME ,Context.MODE_PRIVATE);
                                     }
                                     else{
                                         SharedPreferences.Editor editor1 =sharedPreferences.edit();
