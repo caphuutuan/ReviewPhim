@@ -3,27 +3,23 @@ package com.example.reviewphim;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Movie;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-
 import com.example.reviewphim.adapter.PopularMovieAdapter;
 import com.example.reviewphim.adapter.RecommendMovieAdapter;
 import com.example.reviewphim.model.MovieOnClickListener;
 import com.example.reviewphim.model.PopularMovie;
 import com.example.reviewphim.model.RecommendMovie;
 import com.makeramen.roundedimageview.RoundedImageView;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class HomeActivity extends AppCompatActivity implements MovieOnClickListener {
@@ -65,7 +61,6 @@ public class HomeActivity extends AppCompatActivity implements MovieOnClickListe
             public void onClick(View view) {
                 Intent intent = new Intent(HomeActivity.this, ListMovieActivity.class);
                 startActivity(intent);
-
             }
         });
 
@@ -120,5 +115,26 @@ public class HomeActivity extends AppCompatActivity implements MovieOnClickListe
         startActivity(intent);
 
         Toast.makeText(this,  popularMovie.getName(), Toast.LENGTH_LONG).show();
+    }
+
+    boolean doubleBackToExitPressedOnce = false;
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Nhấn BACK 2 lần để thoát", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
     }
 }
